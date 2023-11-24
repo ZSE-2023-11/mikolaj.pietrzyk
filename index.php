@@ -14,21 +14,29 @@
     <input id="haslo" type="password" name="password" /> 
     <button class="button-85" role="button" type="submit">Zaloguj się</button>
     <?php 
-if ( ! isset( $_POST['submitted'] ) ) 
-header('Location: ' . $_SERVER['HTTP_REFERER']); 
-$credentials = [ 
-  'login' => 'login', 
-  'password' => 'test' 
-]; 
-if ( $credentials['login'] !== $_POST['login'] OR $credentials['password'] !== $_POST['password'] ) 
-{ 
-  header('Location: ' . $_SERVER['HTTP_REFERER']); 
-  exit(); 
-} 
-session_start(); 
-$_SESSION["isLogged"] = "1"; 
-header('Location:' . '../https://www.youtube.com/watch?v=dQw4w9WgXcQ'); 
-exit();
+$servername = "localhost";
+$username = "admin";
+$password = "test";
+$database = "Mariadb";
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+if (isset($_POST['submitted'])) {
+    $query = "SELECT * FROM users WHERE login='" . mysqli_real_escape_string($conn, $_POST['login']) . "' AND haslo='" . mysqli_real_escape_string($conn, $_POST['password']) . "'";
+    $result = $conn->query($query);
+    if ($result->num_rows == 1) {
+        session_start();
+        $_SESSION["isLogged"] = "1";
+        header('Location: ../https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+        exit();
+    } else {
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
+        exit();
+    }
+}
+$conn->close();
 ?>
 <style>
 *
